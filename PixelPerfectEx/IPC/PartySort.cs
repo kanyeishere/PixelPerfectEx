@@ -22,7 +22,13 @@ namespace PixelPerfectEx.IPC
     {
         public static bool Enabled { get; private set; }
 
-
+        public class PartyMemberInfo {
+            public uint Id { get; set; }
+            public string Name { get; set; }
+            public uint Job { get; set; }
+            public string JobAbbr { get; set; }
+            public byte Role { get; set; }
+        }
 
         private static List<Lumina.Excel.GeneratedSheets.ClassJob> ClassJobSorted;
         private static Lumina.Excel.GeneratedSheets.ClassJob _selectClassJob;
@@ -84,6 +90,65 @@ namespace PixelPerfectEx.IPC
                 Message = $"PartyList:{JsonConvert.SerializeObject(GetSortedObjectIdList())}:End",
                 Type = LogSender.LogMessageType.Debug
             });
+            Service.LogSender.Send(new LogSender.LogMessage()
+            {
+                Message = $"PartyInfosList:{JsonConvert.SerializeObject(GetSortedPartyList())}:End",
+                Type = LogSender.LogMessageType.Debug
+            });
+        }
+        public static List<PartyMemberInfo> GetSortedPartyList()
+        {
+            List<BattleChara> pList = new();
+            if (Service.Condition[ConditionFlag.DutyRecorderPlayback])
+            {
+                
+                for (int i = 0; i < 8; i++)
+                {
+                    var id = Marshal.PtrToStructure<uint>(replayPartylist + 0x1A8 + 0x230 * i);
+                    PluginLog.Log($"{id:X}");
+                }
+                for (int i = 0; i < 8; i++)
+                {
+                    var id = Marshal.PtrToStructure<uint>(replayPartylist + 0x1A8 + 0x230 * i);
+                    pList.Add(Service.GameObjects.SearchById(id) as BattleChara);
+                }
+                var cid = ClassJobSorted.Select(cl => cl.RowId).ToList();
+                pList.Sort((o1, o2) =>
+                {
+                    if (cid.IndexOf(o1.ClassJob.Id) < cid.IndexOf(o2.ClassJob.Id))
+                        return -1;
+                    else
+                        return 1;
+                });
+                
+            }
+            else
+            {
+                var partyList = Service.PartieList.ToList();
+                var cid = ClassJobSorted.Select(cl => cl.RowId).ToList();
+                partyList.Sort((o1, o2) =>
+                {
+                    if (cid.IndexOf(o1.ClassJob.Id) < cid.IndexOf(o2.ClassJob.Id))
+                        return -1;
+                    else
+                        return 1;
+                });
+            }
+
+            List<PartyMemberInfo> pInfos = new();
+            pList.ForEach(p =>
+            {
+                pInfos.Add(new()
+                {
+                    Id = p.ObjectId,
+                    Name = p.Name.ToString(),
+                    Job = p.ClassJob.GameData.RowId,
+                    JobAbbr=p.ClassJob.GameData.Abbreviation.ToString(),
+                    Role=p.ClassJob.GameData.Role
+                }); ;
+            });
+            return pInfos;
+
         }
         public static List<uint> GetSortedObjectIdList()
         {

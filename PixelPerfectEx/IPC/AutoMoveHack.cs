@@ -20,16 +20,11 @@ namespace PiPiPlugin.PluginModule
 {
     internal class AutoMoveHack : IPluginModule
     {
-        [StructLayout(LayoutKind.Explicit, Size = 0x1000)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x10)]
         public struct MovingController
         {
-            [FieldOffset(0)]
-            public unsafe IntPtr VTable;
-            [FieldOffset(0x30)]
-            public unsafe IntPtr Heap;
-            [FieldOffset(0x490)]
-            public unsafe uint FollowObjectID;
-            [FieldOffset(0x551)]
+            
+            [FieldOffset(0x0)]
             public unsafe ControlType MovingMode;
 
             public ControlType Mode
@@ -93,15 +88,15 @@ namespace PiPiPlugin.PluginModule
             {
                 unsafe
                 {
-                    MoveControl = (MovingController*)(Service.Scanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 2C 80 3D ?? ?? ?? ?? ??"));
+                    MoveControl = (MovingController*)(Service.Scanner.GetStaticAddressFromSig("E8 ?? ?? ?? ?? 3A C3 74 0C"));
                 }
-                PluginLog.Debug($"MoveControl {(Service.Scanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 2C 80 3D ?? ?? ?? ?? ??")) - Service.Address.BaseAddress:X8}");
+                PluginLog.Debug($"MoveControl {(Service.Scanner.GetStaticAddressFromSig("E8 ?? ?? ?? ?? 3A C3 74 0C")) - Service.Address.BaseAddress:X8}");
                 SetFace = Marshal.GetDelegateForFunctionPointer<SetFacingDelegate>(Service.Scanner.ScanText("E8 ?? ?? ?? ?? 83 FE 4F"));
                 Service.Framework.Update += Framework_Update;
                 Service.Interface.UiBuilder.Draw += UiBuilder_Draw;
 
 
-                ChangeMoveModeHook = Hook<ChangeMoveModeDelegate>.FromAddress(Service.Scanner.ScanText("E8 ?? ?? ?? ?? 4C 8D 4D 68"), ChangeMoveModeHookDetour);
+                ChangeMoveModeHook = Hook<ChangeMoveModeDelegate>.FromAddress(Service.Scanner.ScanText("E8 ?? ?? ?? ?? EB 3F 48 8D 15 ?? ?? ?? ??"), ChangeMoveModeHookDetour);
                 ChangeMoveModeHook.Enable();
                 ChangeMoveModeHook2 = Hook<ChangeMoveModeDelegate>.FromAddress(Service.Scanner.ScanText("E8 ?? ?? ?? ?? C6 43 3E 00"), ChangeMoveModeHook2Detour);
                 ChangeMoveModeHook2.Enable();

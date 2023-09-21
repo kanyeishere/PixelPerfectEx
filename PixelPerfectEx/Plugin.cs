@@ -370,7 +370,7 @@ namespace PixelPerfectEx
                             }
                             if (ImGui.Button("Test"))
                             {
-                                ObjectEffectHack.Test();
+                                PartySort.SendSortedPartyListToAct();
                             }
                             if (ImGui.Button("测试设置面向"))
                             {

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <AssemblyVersion>3.0.0.394</AssemblyVersion>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <AssemblyVersion>3.0.0.406</AssemblyVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>preview</LangVersion>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
@@ -33,39 +33,39 @@
 
   <ItemGroup>
     <Reference Include="Dalamud">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\Dalamud.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\Dalamud.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FFXIVClientStructs">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\FFXIVClientStructs.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\FFXIVClientStructs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ImGui.NET">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\ImGui.NET.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ImGuiScene">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\ImGuiScene.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\ImGuiScene.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Lumina">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\Lumina.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\Lumina.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Lumina.Excel">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\Lumina.Excel.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\Lumina.Excel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\SharpDX.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\..\Dalamud_CN\addon\Hooks\dev\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\XIVLauncher\addon\Hooks\dev\SharpDX.Mathematics.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -39,8 +39,8 @@ namespace PiPiPlugin.PluginModule
 
         //posUp_op1 UpdatePositionInstance
         //posUp_op2 UpdatePositionHandler
-        private const short posUp_op1 = 0x0DE;
-        private const short posUp_op2 = 0x08E;
+        private const short posUp_op1 = 0x112;
+        private const short posUp_op2 = 0x3D2;
         private static IntPtr ZoneUpA1 = IntPtr.Zero;
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         private delegate byte ProcessZonePacketUpDelegate(IntPtr a1, IntPtr dataPtr, IntPtr a3, byte a4);
