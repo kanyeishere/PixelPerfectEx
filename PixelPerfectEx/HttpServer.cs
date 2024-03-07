@@ -195,7 +195,7 @@ namespace PixelPerfectEx
                                         break;
                                     case AoeTypeEnum.Link:
                                         break;
-                                    case AoeTypeEnum.Cros:
+                                    case AoeTypeEnum.Straight:
                                         break;
                                     default:
                                         break;
@@ -252,7 +252,14 @@ namespace PixelPerfectEx
                                     case AoeTypeEnum.Link:
                                         Service.DrawDatas.Add(new Link(jo));
                                         break;
-                                    case AoeTypeEnum.Cros:
+                                    case AoeTypeEnum.Straight:
+                                        Service.DrawDatas.Add(new Straight(jo));
+                                        break;
+                                    case AoeTypeEnum.HotWing:
+                                        Service.DrawDatas.Add(new HotWing(jo));
+                                        break;
+                                    case AoeTypeEnum.Goto:
+                                        Service.DrawDatas.Add(new Goto(jo));
                                         break;
                                     default:
                                         break;

@@ -1,7 +1,9 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility.Numerics;
 using FFXIVClientStructs.Interop;
 using ImGuiNET;
@@ -96,9 +98,9 @@ namespace PiPiPlugin.PluginModule
                 Service.Interface.UiBuilder.Draw += UiBuilder_Draw;
 
 
-                ChangeMoveModeHook = Hook<ChangeMoveModeDelegate>.FromAddress(Service.Scanner.ScanText("E8 ?? ?? ?? ?? EB 3F 48 8D 15 ?? ?? ?? ??"), ChangeMoveModeHookDetour);
+                ChangeMoveModeHook = Service.GameHook.HookFromSignature<ChangeMoveModeDelegate>("E8 ?? ?? ?? ?? EB 3F 48 8D 15 ?? ?? ?? ??", ChangeMoveModeHookDetour);
                 ChangeMoveModeHook.Enable();
-                ChangeMoveModeHook2 = Hook<ChangeMoveModeDelegate>.FromAddress(Service.Scanner.ScanText("E8 ?? ?? ?? ?? C6 43 3E 00"), ChangeMoveModeHook2Detour);
+                ChangeMoveModeHook2 = Service.GameHook.HookFromSignature<ChangeMoveModeDelegate>("E8 ?? ?? ?? ?? C6 43 3E 00", ChangeMoveModeHook2Detour);
                 ChangeMoveModeHook2.Enable();
 
             }
@@ -128,7 +130,7 @@ namespace PiPiPlugin.PluginModule
             }
         }
 
-        private static void Framework_Update(Dalamud.Game.Framework framework)
+        private static void Framework_Update(IFramework framework)
         {
             try
             {

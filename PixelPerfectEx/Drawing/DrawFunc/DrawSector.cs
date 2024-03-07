@@ -41,18 +41,18 @@ namespace PixelPerfectEx.Drawing.DrawFunc
             side2LinePoints.RemoveAt(side2LinePoints.Count - 1);
 
 
-            side1LinePoints.ForEach(p => drawList.PathLineTo(p));
-            points.ForEach(p => drawList.PathLineTo(p));
-            side2LinePoints.ForEach(p => drawList.PathLineTo(p));
+            side1LinePoints.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+            points.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+            side2LinePoints.ForEach(p => drawList.PathLineToMergeDuplicate(p));
             drawList.PathFillConvex(col);
 
 
             if (Service.Configuration.Strock)
             {
                 var colStock = ImGui.ColorConvertU32ToFloat4(col).WithW(1);
-                side1LinePoints.ForEach(p => drawList.PathLineTo(p));
-                points.ForEach(p => drawList.PathLineTo(p));
-                side2LinePoints.ForEach(p => drawList.PathLineTo(p));
+                side1LinePoints.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                points.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                side2LinePoints.ForEach(p => drawList.PathLineToMergeDuplicate(p));
                 drawList.PathStroke(ImGui.ColorConvertFloat4ToU32(colStock), ImDrawFlags.Closed, Service.Configuration.StrockWidth);
             }
         }

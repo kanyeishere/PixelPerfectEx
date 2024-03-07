@@ -26,7 +26,9 @@ namespace PixelPerfectEx.Drawing
             Back = 6,
             TP = 7,
             Link = 8,
-            Cros=9,
+            Straight = 9,
+            HotWing=10,
+            Goto=11,
         }
         public enum CentreTypeEnum
         {

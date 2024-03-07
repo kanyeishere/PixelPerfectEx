@@ -38,8 +38,8 @@ namespace PixelPerfectEx.Drawing.DrawFunc
                 var p1 =PointHelper.GetPionts(innerWorldPoint[i], outerWorldPoint[i]);
                 var p2= PointHelper.GetPionts(outerWorldPoint[(i+1)% Service.Configuration.Segment], innerWorldPoint[(i + 1) % Service.Configuration.Segment]);
 
-                p1.ForEach(p => drawList.PathLineTo(p));
-                p2.ForEach(p => drawList.PathLineTo(p));
+                p1.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                p2.ForEach(p => drawList.PathLineToMergeDuplicate(p));
                 drawList.PathFillConvex(col);
 
                 innerPoints[i]=p1.FirstOrDefault();
@@ -52,12 +52,12 @@ namespace PixelPerfectEx.Drawing.DrawFunc
                 colStock.W = 1;
                 // outer
                 for (int i = 0; i < Service.Configuration.Segment; i++)
-                    if (!float.IsNaN(outerPoints[i].X)) drawList.PathLineTo(outerPoints[i]);
+                    if (!float.IsNaN(outerPoints[i].X)) drawList.PathLineToMergeDuplicate(outerPoints[i]);
                 drawList.PathStroke(ImGui.ColorConvertFloat4ToU32(colStock), ImDrawFlags.Closed, Service.Configuration.StrockWidth);
 
                 // inner
                 for (int i = 0; i < Service.Configuration.Segment; i++)
-                    if (!float.IsNaN(innerPoints[i].X)) drawList.PathLineTo(innerPoints[i]);
+                    if (!float.IsNaN(innerPoints[i].X)) drawList.PathLineToMergeDuplicate(innerPoints[i]);
                 drawList.PathStroke(ImGui.ColorConvertFloat4ToU32(colStock), ImDrawFlags.Closed, Service.Configuration.StrockWidth);
             }
         }

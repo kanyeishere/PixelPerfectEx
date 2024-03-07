@@ -32,7 +32,7 @@ namespace PiPiPlugin.PluginModule
         {
             try
             {
-                PluginLog.Debug($"{a1->ObjectID:X8}:{a2}:{a3}:{a4:X8}");
+                //PluginLog.Debug($"{a1->ObjectID:X8}:{a2}:{a3}:{a4:X8}");
                 Service.LogSender.Send(new() { Type = LogSender.LogMessageType.Debug, Message = $"ObjectEffect:{a1->ObjectID:X8}:{a2}:{a3}:{a4:X8}" });
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace PiPiPlugin.PluginModule
                 PluginLog.Debug($"ObjectEffectHack_ObjectEffectHookIntptr:{ObjectEffectHackHookIntptr:X8}|{ObjectEffectHackHookIntptr:X8}");
                 if (ObjectEffectHackHookIntptr != IntPtr.Zero)
                 {
-                    ObjectEffectHook ??= Hook<ObjectEffectHackHookDelegate>.FromAddress(ObjectEffectHackHookIntptr, ObjectEffectHackHookDetour);
+                    ObjectEffectHook ??= Service.GameHook.HookFromAddress<ObjectEffectHackHookDelegate>(ObjectEffectHackHookIntptr, ObjectEffectHackHookDetour);
                     ObjectEffectHook.Enable();
                     Enabled = true;
                 }

@@ -1,10 +1,12 @@
 ﻿using Dalamud.Memory.Exceptions;
 using Dalamud.Utility;
+using Dalamud.Utility.Numerics;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PixelPerfectEx.Drawing.DrawFunc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,19 +19,19 @@ using static PixelPerfectEx.Drawing.IDrawData;
 
 namespace PixelPerfectEx.Drawing.Types
 {
-    internal class Link : DrawBase
+    internal class Goto : DrawBase
     {
-        public CentreTypeEnum Centre2Type { get; set; }
-        public object Centre2Value { get; set; }
+        public CentreTypeEnum DestinationType { get; set; }
+        public object DestinationValue { get; set; }
         [JsonIgnore]
-        public Vector3 Centre2
+        public Vector3 Destination
         {
             get
             {
-                switch (Centre2Type)
+                switch (DestinationType)
                 {
                     case CentreTypeEnum.ActorId:
-                        var id = (uint)Centre2Value;
+                        var id = (uint)DestinationValue;
                         foreach (var ac in Service.GameObjects)
                         {
                             if (ac.ObjectId == id)
@@ -37,7 +39,7 @@ namespace PixelPerfectEx.Drawing.Types
                         }
                         break;
                     case CentreTypeEnum.ActorName:
-                        var name = (string)Centre2Value;
+                        var name = (string)DestinationValue;
                         foreach (var ac in Service.GameObjects)
                         {
                             if (ac.Name.ToString() == name)
@@ -45,7 +47,7 @@ namespace PixelPerfectEx.Drawing.Types
                         }
                         break;
                     case CentreTypeEnum.PostionValue:
-                        return (Vector3)Centre2Value;
+                        return (Vector3)DestinationValue;
                     default:
                         break;
                 }
@@ -54,20 +56,20 @@ namespace PixelPerfectEx.Drawing.Types
         }
         public float Thikness { get; set; }
         
-        public Link(JObject jo) : base(jo)
+        public Goto(JObject jo) : base(jo)
         {
-            Centre2Type = jo.TryGetValue(nameof(Centre2Type), out var _ra) ? _ra.ToObject<CentreTypeEnum>() : CentreTypeEnum.ActorId;
-            jo.TryGetValue(nameof(Centre2Value), out var _cv2);
-            switch (Centre2Type)
+            DestinationType = jo.TryGetValue(nameof(DestinationType), out var _ra) ? _ra.ToObject<CentreTypeEnum>() : CentreTypeEnum.ActorId;
+            jo.TryGetValue(nameof(DestinationValue), out var _cv2);
+            switch (DestinationType)
             {
                 case CentreTypeEnum.ActorId:
-                    Centre2Value = _cv2.ToObject<uint>();
+                    DestinationValue = _cv2.ToObject<uint>();
                     break;
                 case CentreTypeEnum.ActorName:
-                    Centre2Value = _cv2.ToObject<string>();
+                    DestinationValue = _cv2.ToObject<string>();
                     break;
                 case CentreTypeEnum.PostionValue:
-                    Centre2Value = _cv2.ToObject<Vector3>();
+                    DestinationValue = _cv2.ToObject<Vector3>();
                     break;
             }
             Thikness = jo.TryGetValue(nameof(Thikness), out var _thik) ? _thik.ToObject<float>() : Service.Configuration.DefaultThickness;
@@ -75,25 +77,28 @@ namespace PixelPerfectEx.Drawing.Types
 
         public override void Draw(ImDrawListPtr drawList)
         {
-            DrawFunc.DrawLine.Draw(drawList, Centre, Centre2, Thikness, Color);
+
+            var colStock = ImGui.ColorConvertFloat4ToU32(ImGui.ColorConvertU32ToFloat4(Color).WithW(1));
+            DrawLine.Draw(drawList, Centre, Destination, Thikness, colStock);
+            DrawCircle.Draw(drawList, Destination, 0.3f, Color);
         }
 
         
 
-        private static string exName = "Back Example";
+        private static string exName = "Goto Example";
         private static CentreTypeEnum exCentreType=CentreTypeEnum.ActorId;
         private static string exActorId="0xE0000000";
         private static string exActorName = "丝瓜卡夫卡";
         private static string exPosX = "0", exPosY = "0", exPosZ="0.0";
-        private static CentreTypeEnum exCentre2Type = CentreTypeEnum.ActorId;
+        private static CentreTypeEnum exDestinationType = CentreTypeEnum.PostionValue;
         private static string exActor2Id = "0xE0000000";
         private static string exActor2Name = "丝瓜卡夫卡";
         private static string exPos2X = "0", exPos2Y = "0", exPos2Z = "0.0";
 
-        private static string exThikness="1";
+        private static string exThikness="5";
         private static string exSeeAngle="90";
         private static string exDelay = "0", exDuring = "5";
-        private static Vector4 exColor=new(0,1,0,1f);
+        private static Vector4 exColor=new(0,1,0,0.25f);
 
 
 
@@ -110,7 +115,7 @@ namespace PixelPerfectEx.Drawing.Types
             ImGui.InputText($"##{nameof(Name)}", ref exName, 15);
             strB.Append($"\"{nameof(Name)}\":\"{exName}\",");
 
-            strB.Append($"\"{nameof(AoeType)}\":\"{AoeTypeEnum.Link}\",");
+            strB.Append($"\"{nameof(AoeType)}\":\"{AoeTypeEnum.Goto}\",");
 
             #region Centre Type
             ImGui.Text("Centre Type:");
@@ -168,22 +173,22 @@ namespace PixelPerfectEx.Drawing.Types
             ImGui.Text("Destination Type:");
             ImGui.SameLine();
             ImGui.SetNextItemWidth(200);
-            if (ImGui.BeginCombo($"##{nameof(Centre2Type)}", $"{exCentre2Type}"))
+            if (ImGui.BeginCombo($"##{nameof(DestinationType)}", $"{exDestinationType}"))
             {
                 foreach (CentreTypeEnum item in Enum.GetValues(typeof(CentreTypeEnum)))
                 {
                     if (ImGui.Selectable($"{item}"))
                     {
-                        exCentre2Type = item;
+                        exDestinationType = item;
                     }
                 }
                 ImGui.EndCombo();
             }
-            strB.Append($"\"{nameof(Centre2Type)}\":\"{exCentre2Type}\",");
+            strB.Append($"\"{nameof(DestinationType)}\":\"{exDestinationType}\",");
 
-            strB.Append($"\"{nameof(Centre2Value)}\":");
+            strB.Append($"\"{nameof(DestinationValue)}\":");
             ImGui.SameLine();
-            switch (exCentre2Type)
+            switch (exDestinationType)
             {
                 case CentreTypeEnum.ActorId:
                     ImGui.SetNextItemWidth(350);
@@ -246,14 +251,14 @@ namespace PixelPerfectEx.Drawing.Types
             strB .Append($"\"{nameof(Thikness)}\":{exThikness},\"{nameof(Color)}\":{ImGui.ColorConvertFloat4ToU32(exColor)},\"{nameof(Delay)}\":{exDelay},\"{nameof(During)}\":{exDuring}}}") ;
 
             var jsonStr = strB.ToString();
-            ImGui.Text($"{nameof(Link)} Json:");
+            ImGui.Text($"{nameof(Goto)} Json:");
             ImGui.SameLine();
-            if (ImGui.Button($"Test##{nameof(Link)} Test"))
+            if (ImGui.Button($"Test##{nameof(Goto)} Test"))
             {
                 NetHandler.CommandHandler("Add", jsonStr);
             }
             ImGui.SameLine();
-            ImGui.InputText($"##{nameof(Back)} Json", ref jsonStr, 300, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.ReadOnly);
+            ImGui.InputText($"##{nameof(Goto)} Json", ref jsonStr, 300, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.ReadOnly);
 
             ImGui.Unindent();
         }

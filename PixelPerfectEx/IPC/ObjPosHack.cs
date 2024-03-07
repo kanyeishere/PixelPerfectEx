@@ -40,13 +40,13 @@ namespace PiPiPlugin.PluginModule
             {
                 updatePosIntptr = Service.Scanner.ScanText("40 53 48 83 EC ?? F3 0F 11 89 ?? ?? ?? ?? 48 8B D9 F3 0F 11 91 ?? ?? ?? ??");
                 PluginLog.Debug($"ObjPosHack_UpdatePosIntptr:{updatePosIntptr:X8}|{updatePosIntptr.ToInt64() - Service.Address.BaseAddress.ToInt64():X8}");
-                if (updatePosIntptr!=IntPtr.Zero)
+                if (updatePosIntptr != IntPtr.Zero)
                 {
-                    setPosHook ??= Hook<SetPosDelegate>.FromAddress(updatePosIntptr, SetPosDetour);
+                    setPosHook ??= Service.GameHook.HookFromAddress<SetPosDelegate>(updatePosIntptr, SetPosDetour);
                     setPosHook.Enable();
                     Enabled = true;
                 }
-                
+
             }
             catch (Exception ex)
             {

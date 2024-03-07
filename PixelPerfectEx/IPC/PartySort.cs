@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.Logging;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -99,6 +100,7 @@ namespace PixelPerfectEx.IPC
         public static List<PartyMemberInfo> GetSortedPartyList()
         {
             List<BattleChara> pList = new();
+            List<PartyMemberInfo> pInfos = new();
             if (Service.Condition[ConditionFlag.DutyRecorderPlayback])
             {
                 
@@ -120,7 +122,17 @@ namespace PixelPerfectEx.IPC
                     else
                         return 1;
                 });
-                
+                pList.ForEach(p =>
+                {
+                    pInfos.Add(new()
+                    {
+                        Id = p.ObjectId,
+                        Name = p.Name.ToString(),
+                        Job = p.ClassJob.GameData.RowId,
+                        JobAbbr = p.ClassJob.GameData.Abbreviation.ToString(),
+                        Role = p.ClassJob.GameData.Role
+                    }); ;
+                });
             }
             else
             {
@@ -133,20 +145,21 @@ namespace PixelPerfectEx.IPC
                     else
                         return 1;
                 });
+                partyList.ForEach(p =>
+                {
+                    pInfos.Add(new()
+                    {
+                        Id = p.ObjectId,
+                        Name = p.Name.ToString(),
+                        Job = p.ClassJob.GameData.RowId,
+                        JobAbbr = p.ClassJob.GameData.Abbreviation.ToString(),
+                        Role = p.ClassJob.GameData.Role
+                    }); ;
+                });
             }
 
-            List<PartyMemberInfo> pInfos = new();
-            pList.ForEach(p =>
-            {
-                pInfos.Add(new()
-                {
-                    Id = p.ObjectId,
-                    Name = p.Name.ToString(),
-                    Job = p.ClassJob.GameData.RowId,
-                    JobAbbr=p.ClassJob.GameData.Abbreviation.ToString(),
-                    Role=p.ClassJob.GameData.Role
-                }); ;
-            });
+            
+            
             return pInfos;
 
         }

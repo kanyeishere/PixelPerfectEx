@@ -22,6 +22,7 @@ using System.Drawing;
 using PiPiPlugin.PluginModule;
 using PixelPerfectEx.IPC;
 using System.Collections.Immutable;
+using Dalamud.Interface.Utility;
 
 namespace PixelPerfectEx
 {
@@ -50,7 +51,7 @@ namespace PixelPerfectEx
                 Service.Configuration.Save();
             }
             Service.Address = new PluginAddressResolver();
-            Service.Address.Setup();
+            Service.Address.Setup(Service.Scanner);
 
             Service.CommandManager.AddHandler(Command, new CommandInfo(ShowConfig));
 
@@ -340,6 +341,12 @@ namespace PixelPerfectEx
                                     Link.DrawSetting();
                                 if (ImGui.CollapsingHeader("New Repel Json Example"))
                                     Repel.DrawSetting();
+                                if (ImGui.CollapsingHeader("New Straight Json Example"))
+                                    Straight.DrawSetting();
+                                if (ImGui.CollapsingHeader("New HotWing Json Example"))
+                                    HotWing.DrawSetting();
+                                if (ImGui.CollapsingHeader("New Goto Json Example"))
+                                    Goto.DrawSetting();
                                 ImGui.Unindent();
                                 
                             }
@@ -368,7 +375,7 @@ namespace PixelPerfectEx
                                 PartySort.DrawSetting();
                                 ImGui.Unindent();
                             }
-                            if (ImGui.Button("Test"))
+                            if (ImGui.Button("发送小队列表至ACT"))
                             {
                                 PartySort.SendSortedPartyListToAct();
                             }
@@ -376,6 +383,13 @@ namespace PixelPerfectEx
                             {
                                 ObjectFacingHack.Test();
                             }
+#if DEBUG
+                            if (ImGui.Button("测试虚空潜水"))
+                            {
+                                ObjectFacingHack.DebugTest(0);
+                            }
+                           
+#endif
 
                             ImGui.EndTabItem();
                         }
@@ -609,7 +623,6 @@ namespace PixelPerfectEx
                                 dd.Draw(ImGui.GetWindowDrawList()); 
                             } 
                         }
-
                         DealOldDraw();
                     }
                 }

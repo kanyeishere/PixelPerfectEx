@@ -15,7 +15,7 @@ namespace PixelPerfectEx.Drawing.DrawFunc
         {
             PointHelper.GetPionts(start, end).ForEach(p =>
             {
-                drawList.PathLineTo(p);
+                drawList.PathLineToMergeDuplicate(p);
             });
             drawList.PathStroke(col, ImDrawFlags.None, thikness);
             drawList.PathClear();

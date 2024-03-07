@@ -17,7 +17,7 @@ namespace PixelPerfectEx
         public IntPtr PlayerTargetPtr;
         public IntPtr PlayerTargetDisPtr => ActionManagerPtr + 0x7D8;
 
-        protected override void Setup64Bit(SigScanner scanner)
+        protected override void Setup64Bit(ISigScanner scanner)
         {
             PluginLog.Verbose("===== PixelPerfectEx =====");
             BaseAddress = Process.GetCurrentProcess().MainModule.BaseAddress;

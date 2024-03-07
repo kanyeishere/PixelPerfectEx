@@ -3,6 +3,7 @@ using Dalamud.Game.Network;
 using Dalamud.Hooking;
 using Dalamud.Interface.Animation;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using PixelPerfectEx;
 using SharpDX;
@@ -39,8 +40,8 @@ namespace PiPiPlugin.PluginModule
 
         //posUp_op1 UpdatePositionInstance
         //posUp_op2 UpdatePositionHandler
-        private const short posUp_op1 = 0x112;
-        private const short posUp_op2 = 0x3D2;
+        private const short posUp_op1 = 0x00F0;//112
+        private const short posUp_op2 = 0x0112;
         private static IntPtr ZoneUpA1 = IntPtr.Zero;
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         private delegate byte ProcessZonePacketUpDelegate(IntPtr a1, IntPtr dataPtr, IntPtr a3, byte a4);
@@ -76,11 +77,20 @@ namespace PiPiPlugin.PluginModule
                         Marshal.StructureToPtr<float>(Face, dataPtr + 32, true);
                         Marshal.StructureToPtr<float>(Face, dataPtr + 36, true);
                     }
-                    //if (opCode == posUp_op1)
-                    //{
-                    //    var pkg = Marshal.PtrToStructure<PostionPackge>(dataPtr);
-                    //    PluginLog.Debug($"{pkg}");
-                    //}
+
+                    // 包长 * (int*)(dataPtr - 32 + 8) - 16
+                    short testOpCode = 0x0DE;
+                    if (opCode == testOpCode)
+                    {
+                        unsafe
+                        {
+                            var length = *(int*)(dataPtr - 32 + 8) - 16;
+                            Service.ChatGui.PrintError($"PacketUp opCode:{testOpCode:X} Length:{length}");
+                        }
+                        
+                        //var pkg = Marshal.PtrToStructure<PostionPackge>(dataPtr);
+                        //PluginLog.Debug($"{pkg}");
+                    }
                 }
                 if (ZoneUpA1 == IntPtr.Zero)
                 {
@@ -97,7 +107,7 @@ namespace PiPiPlugin.PluginModule
 
             return ProcessZonePacketUpHook.Original(a1, dataPtr, a3, a4);
         }
-        static Random Random = new Random();
+
 
         private static void SendFace(float face)
         {
@@ -168,7 +178,48 @@ namespace PiPiPlugin.PluginModule
             //SendPosToServer(MathF.PI, Service.ClientState.LocalPlayer.Position);
             SetTo(MathF.PI, 0, 15);
         }
-        
+
+        [StructLayout(LayoutKind.Explicit, Size = 72)]
+        public struct TestPackge
+        {
+            [FieldOffset(0)]
+            public unsafe short OpCode;
+            [FieldOffset(8)]
+            public unsafe int AdjustLength;
+            [FieldOffset(32)]
+            public unsafe float Face;
+            [FieldOffset(36)]
+            public unsafe System.Numerics.Vector3 Pos;
+
+
+        }
+        public static void DebugTest(float offsetY)
+        {
+
+            
+
+            if (ZoneUpA1 == IntPtr.Zero) return;
+            try
+            {
+                TestPackge testPackge = new TestPackge();
+                testPackge.AdjustLength = 0x38;
+                testPackge.OpCode = 0x0DE;
+                testPackge.Face = Service.ClientState.LocalPlayer.Rotation;
+
+                testPackge.Pos = Service.ClientState.LocalPlayer.Position;
+
+                Marshal.StructureToPtr(testPackge, PosPackgeBuffer, true);
+
+                ProcessZonePacketUpHook.Original(ZoneUpA1, PosPackgeBuffer, PosPackgeBuffer, 1);
+
+            }
+            catch (Exception ex)
+            {
+
+                PluginLog.Error($"{ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
         public static void SetTo(float facing, float delay, float during)
         {
             if (!Service.Condition[ConditionFlag.DutyRecorderPlayback])
@@ -196,12 +247,13 @@ namespace PiPiPlugin.PluginModule
             try
             {
 
-                SetObjectFacingOnCastHook = Hook<SetObjectFacingOneCastDelegate>.FromAddress(Service.Scanner.ScanText("48 89 5C 24 ?? 57 48 83 EC 30 F3 0F 10 42 ?? 49 8B F8"), SetObjectFacingOnCastDetour);
+                SetObjectFacingOnCastHook = Service.GameHook.HookFromSignature<SetObjectFacingOneCastDelegate>("48 89 5C 24 ?? 57 48 83 EC 30 F3 0F 10 42 ?? 49 8B F8", SetObjectFacingOnCastDetour);
                 SetObjectFacingOnCastHook.Enable();
 
-                ProcessZonePacketUpHook = Hook<ProcessZonePacketUpDelegate>.FromAddress(
-                    ((Dalamud.Game.Network.GameNetworkAddressResolver)Service.GameNetwork.GetType().GetField("address", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Service.GameNetwork)).ProcessZonePacketUp,
-                    ProcessZonePacketUpDetour);
+                //PluginLog.Debug($"ObjectFacingHack ProcessZonePacketUp {((Dalamud.Game.Network.GameNetworkAddressResolver)Service.GameNetwork.GetType().GetField("address", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Service.GameNetwork)).ProcessZonePacketUp - Service.Address.BaseAddress:X}");
+                //PluginLog.Debug($"ObjectFacingHack ProcessZonePacketDown {((Dalamud.Game.Network.GameNetworkAddressResolver)Service.GameNetwork.GetType().GetField("address", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Service.GameNetwork)).ProcessZonePacketDown - Service.Address.BaseAddress:X}");
+
+                ProcessZonePacketUpHook = Service.GameHook.HookFromSignature<ProcessZonePacketUpDelegate>( "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 70 8B 81 ?? ?? ?? ??",ProcessZonePacketUpDetour);
                 ProcessZonePacketUpHook.Enable();
 
                 PosPackge.OpCode = posUp_op1;
@@ -220,7 +272,7 @@ namespace PiPiPlugin.PluginModule
 
         }
 
-        private static void Framework_Update(Dalamud.Game.Framework framework)
+        private static void Framework_Update(IFramework framework)
         {
             if (OwnFaceLocked && Service.ClientState.LocalPlayer is not null)
             {

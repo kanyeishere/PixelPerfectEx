@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.Utility;
 using System;
 using System.Numerics;
@@ -30,7 +31,7 @@ namespace PixelPerfectEx.Drawing
             var matrixSingleton = getMatrixSingleton();
             if (matrixSingleton == IntPtr.Zero)
                 throw new InvalidOperationException("Cannot get matrixSingleton");
-
+            
             // Read current ViewProjectionMatrix plus game window size
             var viewProjectionMatrix = default(SharpDX.Matrix);
             float width, height;

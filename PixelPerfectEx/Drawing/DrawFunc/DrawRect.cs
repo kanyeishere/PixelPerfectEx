@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using Dalamud.Utility.Numerics;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,22 +36,21 @@ namespace PixelPerfectEx.Drawing.DrawFunc
             var l2 = PointHelper.GetPionts(b, c);
             var l3 = PointHelper.GetPionts(c, d);
             var l4 = PointHelper.GetPionts(d, a);
-            l1.ForEach(p => drawList.PathLineTo(p));
-            l2.ForEach(p => drawList.PathLineTo(p));
-            l3.ForEach(p => drawList.PathLineTo(p));
-            l4.ForEach(p => drawList.PathLineTo(p));
-
+            l1.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+            l2.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+            l3.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+            l4.ForEach(p => drawList.PathLineToMergeDuplicate(p));
 
             drawList.PathFillConvex(Color);
+            drawList.PathClear();
             if (Service.Configuration.Strock)
             {
-                var colStock = ImGui.ColorConvertU32ToFloat4(Color);
-                colStock.W = 1;
-                l1.ForEach(p => drawList.PathLineTo(p));
-                l2.ForEach(p => drawList.PathLineTo(p));
-                l3.ForEach(p => drawList.PathLineTo(p));
-                l4.ForEach(p => drawList.PathLineTo(p));
-                drawList.PathStroke(Color, ImDrawFlags.None, Service.Configuration.StrockWidth);
+                var colStock = ImGui.ColorConvertU32ToFloat4(Color).WithW(1);
+                l1.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                l2.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                l3.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                l4.ForEach(p => drawList.PathLineToMergeDuplicate(p));
+                drawList.PathStroke(ImGui.ColorConvertFloat4ToU32(colStock), ImDrawFlags.Closed, Service.Configuration.StrockWidth);
             }
         }
         

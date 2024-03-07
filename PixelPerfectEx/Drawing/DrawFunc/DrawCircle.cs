@@ -28,14 +28,14 @@ namespace PixelPerfectEx.Drawing.DrawFunc
                 else
                 {
                     points[i] = p;
-                    drawList.PathLineTo(p);
+                    drawList.PathLineToMergeDuplicate(p);
                 }
             }
             drawList.PathFillConvex(col);
             if (Service.Configuration.Strock)
             {
                 foreach (var p in points)
-                    if (!float.IsNaN(p.X)) drawList.PathLineTo(p);
+                    if (!float.IsNaN(p.X)) drawList.PathLineToMergeDuplicate(p);
                 var colStock = ImGui.ColorConvertU32ToFloat4(col);
                 colStock.W = 1;
                 drawList.PathStroke(ImGui.ColorConvertFloat4ToU32(colStock), ImDrawFlags.Closed, Service.Configuration.StrockWidth);

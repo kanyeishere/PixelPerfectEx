@@ -153,6 +153,11 @@ namespace PixelPerfectEx.Drawing.Types
             var jsonStr = strB.ToString();
             ImGui.Text($"{nameof(Repel)} Json:");
             ImGui.SameLine();
+            if (ImGui.Button($"Test##{nameof(Repel)} Test"))
+            {
+                NetHandler.CommandHandler("Add", jsonStr);
+            }
+            ImGui.SameLine();
             ImGui.InputText($"##{nameof(Repel)} Json", ref jsonStr, 300, ImGuiInputTextFlags.AutoSelectAll | ImGuiInputTextFlags.ReadOnly);
 
             ImGui.Unindent();
